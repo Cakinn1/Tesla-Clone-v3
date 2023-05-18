@@ -25,6 +25,7 @@ signInWithEmailAndPassword(auth, email, password)
 .catch((error) => {
   alert("nope")
 })
+// testing commit
 }
   return (
     <div className="login">
