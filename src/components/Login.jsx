@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -7,26 +7,40 @@ import ButtonSecondary from "./ButtonSecondary";
 import {
   getAuth,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { useDispatch } from "react-redux";
-import { login } from "../features/userSlice";
 import { auth } from "../firebase/firebase";
 
-function Login({ name }) {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-function signIn() {
-signInWithEmailAndPassword(auth, email, password)
-.then((user) => {
-  console.log(user)
-})
-.catch((error) => {
-  alert("nope")
-})
-// testing commit
-}
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log(user);
+      if (user) {
+        // Handle the logged-in state if needed
+      }
+    });
+  }, []);
+
+  const navigate = useNavigate();
+
+  function signIn(e) {
+    e.preventDefault();
+    console.log("log in");
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(({ user }) => {
+        console.log(user);
+        // Handle the logged-in state if needed
+        navigate("/teslaaccount");
+      })
+      .catch((error) => {
+        alert("no user, please create an account!");
+      });
+  }
+
   return (
     <div className="login">
       <div className="login__header">
@@ -44,27 +58,28 @@ signInWithEmailAndPassword(auth, email, password)
         </div>
       </div>
       <div className="login__info">
-        <h1>Sigh In</h1>
-        <form className="login__form">
+        <h1>Sign In</h1>
+        <form className="login__form" onSubmit={signIn}>
           <label htmlFor="email">Email Address</label>
           <input
             type="email"
-            id="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <label htmlFor="email"> Password</label>
+          <label htmlFor="password"> Password</label>
           <input
             type="password"
-            id="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <ButtonPrimary name="Sign In" type="submit" onclick={signIn} />
+          <ButtonPrimary name="Sign In" type="submit" />
         </form>
         <div className="login__divider">
           <hr /> <span>OR</span> <hr />
         </div>
+
         <Link to="/signup">
           <ButtonSecondary name="create account" />
         </Link>

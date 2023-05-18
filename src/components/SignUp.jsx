@@ -1,61 +1,49 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LanguageIcon from "@mui/icons-material/Language";
 import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
 import {
   getAuth,
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import "../styles/SignUp.css";
 import { auth } from "../firebase/firebase";
-import { login } from "../features/userSlice";
+import "../styles/SignUp.css"
+
+
+
+
 function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
+  const navigate = useNavigate();
+  
 
-  //   const dispatch = useDispatch();
-  //   const navigate = useNavigate();
+  function signUp(e) {
+    e.preventDefault();
 
-  //   const signUp = (e) => {
-  //     e.preventDefault();
+    if (!fName) {
+      return alert("Please enter a First Name!");
+    }
 
-  //     if (!fName) {
-  //       return alert("Please Enter A First Name!");
-  //     }
-  //     if (!lName) {
-  //       return alert("Please Enter A Last Name");
-  //     }
+    if (!lName) {
+      return alert("Please enter a Last Name!");
+    }
 
-  //     createUserWithEmailAndPassword(email, password)
-  //     .then((userAuth) => {
-  //       userAuth.user
-  //         .updateProfile({
-  //           displayName: fName,
-  //         })
-  //         .then(() => {
-  //           dispatch(
-  //             login({
-  //               email: userAuth.user.email,
-  //               uid: userAuth.user.uid,
-  //               displayName: fName,
-  //             })
-  //           );
-  //           navigate.push("/teslaacount");
-  //         });
-  //     })
-  //     .catch((error) => alert(error.message));
-  // };
-  function signUp() {
-    console.log("reigster");
-    createUserWithEmailAndPassword(auth, "guest123@gmaill.com", "guest1233")
-      .then((user) => {
-        console.log(user);
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userAuth) => {
+        updateProfile(userAuth.user, {
+          displayName: fName,
+        })
+          .then(() => {
+            navigate("/teslaaccount");
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
       })
       .catch((error) => {
         alert(error.message);
@@ -80,7 +68,7 @@ function SignUp() {
       </div>
       <div className="signup__info">
         <h1>Create Account</h1>
-        <form className="signup__form">
+        <form className="signup__form" onSubmit={signUp}>
           <label htmlFor="fName">First Name</label>
           <input
             type="text"
@@ -109,13 +97,13 @@ function SignUp() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <ButtonPrimary name="create account" type="submit" onClick={signUp} />
+          <ButtonPrimary name="Create Account" type="submit" />
         </form>
         <div className="signup__divider">
           <hr /> <span>OR</span> <hr />
         </div>
         <Link to="/login">
-          <ButtonSecondary name="sign in" className="signup__buttonSecondary" />
+          <ButtonSecondary name="Sign In" className="signup__buttonSecondary" />
         </Link>
       </div>
     </div>
